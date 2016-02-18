@@ -124,7 +124,7 @@ public class FactBase implements ExtensionObject {
 	 * @return number of facts in this fact base
 	 */
 	public int size() {
-		return nextFactID;
+		return orderedFacts.size();
 	}
 	
 	/** Returns the list of field names defining the structure of this fact base
