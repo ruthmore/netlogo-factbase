@@ -28,11 +28,12 @@ package org.cfpm.factbaseExtension;
 
 import org.nlogo.api.Argument;
 import org.nlogo.api.Context;
-import org.nlogo.api.DefaultReporter;
 import org.nlogo.api.Dump;
 import org.nlogo.api.ExtensionException;
 import org.nlogo.api.LogoException;
-import org.nlogo.api.Syntax;
+import org.nlogo.api.Reporter;
+import org.nlogo.core.Syntax;
+import org.nlogo.core.SyntaxJ;
 
 /** This class implements the "size" primitive for the factbase extension. Size returns the number of facts in
  * the given fact base.
@@ -42,23 +43,23 @@ import org.nlogo.api.Syntax;
  * @author Ruth Meyer
  *
  */
-public class FactBaseSize extends DefaultReporter {
+public class FactBaseSize implements Reporter {
 
 	/** The size primitive expects a fact base as input and returns a number (the size of the given fact base).
 	 * 
 	 */
 	public Syntax getSyntax() {
-		return Syntax.reporterSyntax(new int[]{Syntax.WildcardType()}, Syntax.NumberType());
+		return SyntaxJ.reporterSyntax(new int[]{Syntax.WildcardType()}, Syntax.NumberType());
 	}
 	
-	/** Returns the size of the specified fact base, that is the number of facts in this fact base. The first argument {@link args[0]} has
+	/** Returns the size of the specified fact base, that is the number of facts in this fact base. The first argument {@code args[0]} has
 	 * to be a fact base-
 	 * Generates an error if the argument is invalid.
 	 * 
 	 * @param args the arguments to this call of size
 	 * @param context the NetLogo context
 	 * @return the size of the fact base
-	 * @throw ExtensionException if any of the arguments are invalid
+	 * @throws ExtensionException if any of the arguments are invalid
 	 * @see org.nlogo.api.Reporter#report(org.nlogo.api.Argument[], org.nlogo.api.Context)
 	 */
 	@Override

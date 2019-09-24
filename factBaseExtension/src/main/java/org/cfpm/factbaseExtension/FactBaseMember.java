@@ -28,12 +28,13 @@ package org.cfpm.factbaseExtension;
 
 import org.nlogo.api.Argument;
 import org.nlogo.api.Context;
-import org.nlogo.api.DefaultReporter;
 import org.nlogo.api.Dump;
 import org.nlogo.api.ExtensionException;
 import org.nlogo.api.LogoException;
-import org.nlogo.api.LogoList;
-import org.nlogo.api.Syntax;
+import org.nlogo.api.Reporter;
+import org.nlogo.core.LogoList;
+import org.nlogo.core.Syntax;
+import org.nlogo.core.SyntaxJ;
 
 /** This class implements the "member?" primitive for the factbase extension. Member?
  * takes a fact base and a fact as inputs and returns true, if the fact base contains
@@ -44,25 +45,25 @@ import org.nlogo.api.Syntax;
  * @author Ruth Meyer
  *
  */
-public class FactBaseMember extends DefaultReporter {
+public class FactBaseMember implements Reporter {
 
 	// expecting a factbase and a list (= fact) as input; returns true if the fact is contained in the factbase, otherwise false
 	/** Member? expects a fact base and a fact as inputs, returns a Boolean value.
 	 * 
 	 */
 	public Syntax getSyntax() {
-		return Syntax.reporterSyntax(new int[]{Syntax.WildcardType(), Syntax.ListType()}, Syntax.BooleanType());
+		return SyntaxJ.reporterSyntax(new int[]{Syntax.WildcardType(), Syntax.ListType()}, Syntax.BooleanType());
 	}
 	
 	
 	/** Reports true if the given fact exists within the specified fact base. Otherwise, reports false. 
-	 * The first argument {@link args[0]} has to be a fact base, the second argument {@link args[1]} has to be a
+	 * The first argument {@code args[0]} has to be a fact base, the second argument {@code args[1]} has to be a
 	 * fact (list). Generates an error if any of the arguments is invalid.
 	 * 
 	 * @param args the arguments to this call of member?
 	 * @param context the NetLogo context
 	 * @return true if the fact is found, otherwise false
-	 * @throw ExtensionException if any of the arguments are invalid
+	 * @throws ExtensionException if any of the arguments are invalid
 	 * @see org.nlogo.api.Reporter#report(org.nlogo.api.Argument[], org.nlogo.api.Context)
 	 */
 	@Override

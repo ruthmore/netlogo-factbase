@@ -26,21 +26,21 @@
 
 package org.cfpm.factbaseExtension;
 
+import org.nlogo.api.Context;
+import org.nlogo.api.DefaultClassManager;
+import org.nlogo.api.ExtensionException;
+import org.nlogo.api.LogoException;
+import org.nlogo.api.LogoListBuilder;
+import org.nlogo.api.OutputDestinationJ;
+import org.nlogo.api.PrimitiveManager;
+import org.nlogo.core.LogoList;
+import org.nlogo.nvm.ExtensionContext;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.WeakHashMap;
-
-import org.nlogo.api.Context;
-import org.nlogo.api.DefaultClassManager;
-import org.nlogo.api.ExtensionException;
-import org.nlogo.api.LogoException;
-import org.nlogo.api.LogoList;
-import org.nlogo.api.LogoListBuilder;
-import org.nlogo.api.PrimitiveManager;
-import org.nlogo.nvm.ExtensionContext;
-import org.nlogo.nvm.Workspace.OutputDestination;
 
 /** 
  * <!-- FactBaseExtension -->
@@ -101,7 +101,7 @@ public class FactBaseExtension extends DefaultClassManager {
 	 * 
 	 * @param fact a list of objects (usually as an instance of ArrayList<Object>)
 	 * @return a list of the same objects as a LogoList
-	 * @see org.nlogo.api.LogoList
+	 * @see org.nlogo.core.LogoList
 	 */
 	protected static LogoList toLogoList(List<Object> fact) {
 		LogoListBuilder list = new LogoListBuilder();
@@ -119,7 +119,7 @@ public class FactBaseExtension extends DefaultClassManager {
 	 */
 	protected static List<Object> toFact(LogoList llist) {
 		List<Object> fact = new ArrayList<Object>();
-		for (Iterator<Object> it = llist.iterator(); it.hasNext(); ) {
+		for (Iterator<Object> it = llist.javaIterator(); it.hasNext(); ) {
 			fact.add(it.next());
 		}
 		return fact;
@@ -160,7 +160,7 @@ public class FactBaseExtension extends DefaultClassManager {
 				ExtensionContext extcontext = (ExtensionContext) context; 
 				try {
 					extcontext.workspace().outputObject(mssg, null, true, true,
-							(toOutputArea) ? OutputDestination.OUTPUT_AREA : OutputDestination.NORMAL); 
+							(toOutputArea) ? OutputDestinationJ.OUTPUT_AREA() : OutputDestinationJ.NORMAL());
 				} 
 				catch (LogoException e) {
 					throw new ExtensionException(e); 

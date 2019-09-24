@@ -27,11 +27,12 @@ package org.cfpm.factbaseExtension;
 
 import org.nlogo.api.Argument;
 import org.nlogo.api.Context;
-import org.nlogo.api.DefaultReporter;
 import org.nlogo.api.ExtensionException;
 import org.nlogo.api.LogoException;
-import org.nlogo.api.LogoList;
-import org.nlogo.api.Syntax;
+import org.nlogo.api.Reporter;
+import org.nlogo.core.LogoList;
+import org.nlogo.core.Syntax;
+import org.nlogo.core.SyntaxJ;
 
 /** This class implements the "create" primitive for the factbase extension. It creates a new 
  * fact base of the specified structure and returns it. In NetLogo terms, creating a fact base is
@@ -42,23 +43,23 @@ import org.nlogo.api.Syntax;
  * @author Ruth Meyer
  *
  */
-public class FactBaseCreate extends DefaultReporter {
+public class FactBaseCreate implements Reporter {
 	
 	// expects a list, returns a reference to the newly created factbase
 	/** The create primitive expects a list of field names as input and returns a fact base.
 	 * 
 	 */
 	public Syntax getSyntax() {
-		return Syntax.reporterSyntax(new int[]{Syntax.ListType()}, Syntax.WildcardType());
+		return SyntaxJ.reporterSyntax(new int[]{Syntax.ListType()}, Syntax.WildcardType());
 	}
 
-	/** Performs the creation of a new fact base and reports it. The first argument {@link args[0]} has
+	/** Performs the creation of a new fact base and reports it. The first argument {@code args[0]} has
 	 * to contain the list of field names.
 	 * 
 	 * @param args the arguments to this call of create
 	 * @param context the NetLogo context
 	 * @return a reference to the newly created fact base
-	 * @throw ExtensionException if the argument is invalid
+	 * @throws ExtensionException if the argument is invalid
 	 * @see org.nlogo.api.Reporter#report(org.nlogo.api.Argument[], org.nlogo.api.Context)
 	 */
 	@Override

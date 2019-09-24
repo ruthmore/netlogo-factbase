@@ -26,18 +26,18 @@
 
 package org.cfpm.factbaseExtension;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
+import org.nlogo.nvm.AnonymousReporter;
 import org.nlogo.api.Argument;
 import org.nlogo.api.Context;
 import org.nlogo.api.Dump;
 import org.nlogo.api.ExtensionException;
 import org.nlogo.api.LogoException;
-import org.nlogo.api.LogoList;
 import org.nlogo.api.LogoListBuilder;
-import org.nlogo.nvm.ReporterTask;
+import org.nlogo.core.LogoList;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /** This class provides the necessary functionality for retrieval from a fact base. It is used by several of the primitives
  * (retrieve, retrieve-to, exists?, retract-all, one-of, n-of).
@@ -50,7 +50,7 @@ public class Retrieval {
 	/** The fact base to be used. */
 	FactBase fb;
 	/** The task specifying the retrieval condition. */
-	ReporterTask task;
+	AnonymousReporter task;
 	/** The list of fields corresponding to the formal parameters of the task. */
 	LogoList fields;
 	/** The indices of the fields, stored for easy access later */
@@ -77,10 +77,10 @@ public class Retrieval {
 		fb = (FactBase)arg0;
 		// second argument should be a reporter task
 		Object arg1 = args[1].get();
-		if (! (arg1 instanceof ReporterTask)) {
+		if (! (arg1 instanceof AnonymousReporter)) {
 			throw new ExtensionException ("not a reporter task: " + Dump.logoObject(arg1));
 		}
-		task = (ReporterTask)arg1;
+		task = (AnonymousReporter)arg1;
 		// third argument is a list of which fields to associate with which formal input to the task
 		Object arg2 = args[2].get();
 		if (! (arg2 instanceof LogoList)) {
@@ -126,7 +126,7 @@ public class Retrieval {
 		for (int i = 0; i < fb.size(); i++) {
 			// need to skip deleted entries
 			if (!fb.isRetracted(i)) {
-				List<Object> fact = fb.retrieveFact(i);
+				LogoList fact = fb.retrieveFact(i);
 				FactBaseExtension.writeToNetLogo("checking fact: " + fb.printFact(fact), false, context);
 				Object[] values = getValuesOf(fact, fIndices);
 				FactBaseExtension.writeToNetLogo("field values are: " + printArray(values), false, context);
@@ -134,7 +134,7 @@ public class Retrieval {
 				Object isValidFact = task.report(context, values);
 				FactBaseExtension.writeToNetLogo("task result is: " + isValidFact, false, context);
 				if (isValidFact != null && (Boolean)isValidFact) {
-					results.add(FactBaseExtension.toLogoList(filter(fact)));
+					results.add(filter(fact));
 				}
 			}
 		}
@@ -148,7 +148,7 @@ public class Retrieval {
 	 * @return the filtered fact, that means only those values of the given fact that correspond to the specified output fields
 	 * @throws ExtensionException an exception might occur during writing to NetLogo (in debugging phase)
 	 */
-	private List<Object> filter(List<Object> fact) throws ExtensionException {
+	private LogoList filter(LogoList fact) throws ExtensionException {
 		// check if output "filter" applies, i.e. if outFIndices is set
 		if (outFIndices == null) {
 			// no filter -> do nothing
@@ -160,7 +160,7 @@ public class Retrieval {
 			filteredFact.add(fact.get(i));
 		}
 		FactBaseExtension.writeToNetLogo("filtered fact is: " + printArrayList(filteredFact), false, context);
-		return filteredFact;
+		return LogoList.fromJava(filteredFact);
 	}
 
 	/** Finds the first fact that satisfies the condition as specified in {@link #task} and {@link #fields}.
@@ -178,7 +178,7 @@ public class Retrieval {
 		while (firstFact == null && i < fb.size()) {
 			// need to skip deleted entries
 			if (!fb.isRetracted(i)) {
-				List<Object> fact = fb.retrieveFact(i);
+				LogoList fact = fb.retrieveFact(i);
 				FactBaseExtension.writeToNetLogo("checking fact: " + fb.printFact(fact), false, context);
 				Object[] values = getValuesOf(fact, fIndices);
 				FactBaseExtension.writeToNetLogo("field values are: " + printArray(values), false, context);
@@ -186,7 +186,7 @@ public class Retrieval {
 				Object isValidFact = task.report(context, values);
 				FactBaseExtension.writeToNetLogo("task result is: " + isValidFact, false, context);
 				if (isValidFact != null && (Boolean)isValidFact) {
-					firstFact = FactBaseExtension.toLogoList(fact);
+					firstFact = fact;
 				}
 			}
 			i++;						
@@ -200,7 +200,7 @@ public class Retrieval {
 	 * @param fieldIndices the fields to be used (given as field indices)
 	 * @return the values corresponding to the specified fields as an array
 	 */
-	private Object[] getValuesOf(List<Object> fact, int[] fieldIndices) {
+	private Object[] getValuesOf(LogoList fact, int[] fieldIndices) {
 		// returns an object array ready to stick into a reporter task
 		Object[] values = new Object[fieldIndices.length];
 		for (int i = 0; i < fieldIndices.length; i++) {
@@ -218,7 +218,7 @@ public class Retrieval {
 	private int[] getFieldIndices(LogoList fields) throws ExtensionException {
 		int[] ix = new int[fields.size()];
 		int j = 0;
-		for (Iterator<Object> fi = fields.iterator(); fi.hasNext(); ) {
+		for (Iterator<Object> fi = fields.javaIterator(); fi.hasNext(); ) {
 			String fName = fi.next().toString();
 			int i = fb.getFieldIndex(fName);
 			if (i < 0) {

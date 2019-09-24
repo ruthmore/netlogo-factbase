@@ -26,16 +26,13 @@
 
 package org.cfpm.factbaseExtension;
 
-import java.util.ArrayList;
-
 import org.nlogo.api.Argument;
 import org.nlogo.api.Context;
-import org.nlogo.api.DefaultReporter;
-import org.nlogo.api.Dump;
 import org.nlogo.api.ExtensionException;
 import org.nlogo.api.LogoException;
-import org.nlogo.api.LogoList;
-import org.nlogo.api.Syntax;
+import org.nlogo.api.Reporter;
+import org.nlogo.core.Syntax;
+import org.nlogo.core.SyntaxJ;
 
 /** This class implements the "retrieve-to" primitive for the factbase extension. Retrieve-to works the same as retrieve in that it uses a 
  * ReporterTask and a List of field names as the condition that facts have to satisfy to be included in the result. The only difference is
@@ -47,7 +44,7 @@ import org.nlogo.api.Syntax;
  * @author Ruth Meyer
  *
  */
-public class FactBaseRetrieveTo extends DefaultReporter {
+public class FactBaseRetrieveTo implements Reporter {
 
 	// expects a reference to the factbase, a condition (as ReporterTask and List of field names) and the form of the output (as a list of field names),
 	// returns a list of facts satisfying that condition filtered by the output form (or an empty list if not found)
@@ -55,20 +52,20 @@ public class FactBaseRetrieveTo extends DefaultReporter {
 	 * field names for the output as inputs and returns a list of all facts satisfying the given condition filtered by this output format.
 	 */
 	public Syntax getSyntax() {
-		return Syntax.reporterSyntax(new int[]{Syntax.WildcardType(), Syntax.ReporterTaskType(), Syntax.ListType(), Syntax.ListType()}, 
+		return SyntaxJ.reporterSyntax(new int[]{Syntax.WildcardType(), Syntax.ReporterType(), Syntax.ListType(), Syntax.ListType()},
 									 Syntax.ListType());
 	}
 	
 
-	/** Returns the specified parts of all facts satisfying the given condition from the specified fact base. The first argument {@link args[0]} has
-	 * to be a fact base, the second argument {@link args[1]} has to be a reporter task, the third argument has to be a list of
+	/** Returns the specified parts of all facts satisfying the given condition from the specified fact base. The first argument {@code args[0]} has
+	 * to be a fact base, the second argument {@code args[1]} has to be a reporter task, the third argument has to be a list of
 	 * field names corresponding to the formal arguments used in the task, and the fourth argument has to be a list of field names to be included in the output.
 	 * Returns an empty list if no such facts exist. Generates an error if any of the arguments are invalid.
 	 * 
 	 * @param args the arguments to this call of retrieve-to
 	 * @param context the NetLogo context
 	 * @return all (output-format filtered) facts satisfying the given condition
-	 * @throw ExtensionException if any of the arguments are invalid
+	 * @throws ExtensionException if any of the arguments are invalid
 	 * @see org.nlogo.api.Reporter#report(org.nlogo.api.Argument[], org.nlogo.api.Context)
 	 */
 	@Override

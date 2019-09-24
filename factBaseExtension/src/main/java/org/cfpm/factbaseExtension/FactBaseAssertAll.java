@@ -26,17 +26,17 @@
 
 package org.cfpm.factbaseExtension;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.nlogo.api.Argument;
+import org.nlogo.api.Command;
 import org.nlogo.api.Context;
-import org.nlogo.api.DefaultCommand;
 import org.nlogo.api.Dump;
 import org.nlogo.api.ExtensionException;
 import org.nlogo.api.LogoException;
-import org.nlogo.api.LogoList;
-import org.nlogo.api.Syntax;
+import org.nlogo.core.LogoList;
+import org.nlogo.core.Syntax;
+import org.nlogo.core.SyntaxJ;
+
+import java.util.Iterator;
 
 /** This class implements the "assert-all" primitive for the factbase extension. In Netlogo terms,
  * asserting a list of facts is a command, that means using the assert-all primitive does not return any
@@ -47,18 +47,18 @@ import org.nlogo.api.Syntax;
  * @author Ruth Meyer
  *
  */
-public class FactBaseAssertAll extends DefaultCommand {
+public class FactBaseAssertAll implements Command {
 
 	// expecting a factbase and a list of lists (= facts) as input
 	/** The assert-all primitive expects a fact base and a list of lists (= facts) as inputs.
 	 * 
 	 */
 	public Syntax getSyntax() {
-		return Syntax.commandSyntax(new int[]{Syntax.WildcardType(), Syntax.ListType()});
+		return SyntaxJ.commandSyntax(new int[]{Syntax.WildcardType(), Syntax.ListType()});
 	}
 	
-	/** Performs the assertion. First argument {@link args[0]} has to be a fact base, second argument
-	 * {@link args[1]} has to be a list of lists (the facts to be asserted).
+	/** Performs the assertion. First argument {@code args[0]} has to be a fact base, second argument
+	 * {@code args[1]} has to be a list of lists (the facts to be asserted).
 	 * 
 	 *  @param args the arguments to this call of assert-all
 	 *  @param context the NetLogo context
@@ -76,8 +76,8 @@ public class FactBaseAssertAll extends DefaultCommand {
 		try {
 			arg1 = args[1].getList();
 			// for each element of arg1, check if it's a list.
-			for (Iterator<Object> facts = arg1.iterator(); facts.hasNext(); ) {
-				List<Object> fact = (LogoList)facts.next();
+			for (Iterator<Object> facts = arg1.javaIterator(); facts.hasNext(); ) {
+				LogoList fact = (LogoList)facts.next();
 				// then try and assert it. All checks of the fact are done in assertFact()
 				// this will throw an ExtensionException if things go wrong
 				fb.assertFact(fact); 

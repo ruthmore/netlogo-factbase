@@ -26,18 +26,19 @@
 
 package org.cfpm.factbaseExtension;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import org.nlogo.api.Argument;
 import org.nlogo.api.Context;
-import org.nlogo.api.DefaultReporter;
 import org.nlogo.api.Dump;
 import org.nlogo.api.ExtensionException;
 import org.nlogo.api.LogoException;
-import org.nlogo.api.LogoList;
 import org.nlogo.api.LogoListBuilder;
-import org.nlogo.api.Syntax;
+import org.nlogo.api.Reporter;
+import org.nlogo.core.LogoList;
+import org.nlogo.core.Syntax;
+import org.nlogo.core.SyntaxJ;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /** This class implements the "n-of" primitive for the factbase extension. N-of retrieves n
  * random facts satisfying the specified condition from the given fact base. It is an error
@@ -48,7 +49,7 @@ import org.nlogo.api.Syntax;
  * @author Ruth Meyer
  *
  */
-public class FactBaseNOf extends DefaultReporter {
+public class FactBaseNOf implements Reporter {
 
 	// expects a reference to the factbase, a condition (as ReporterTask and List of field names) and a number n, 
 	// returns a list containing n random facts satisfying that condition 
@@ -57,11 +58,11 @@ public class FactBaseNOf extends DefaultReporter {
 	 * and an integer number (number of facts wanted) as inputs and returns a list of n facts satisfying the given condition. 
 	 */
 	public Syntax getSyntax() {
-		return Syntax.reporterSyntax(new int[]{Syntax.WildcardType(), Syntax.ReporterTaskType(), Syntax.ListType(), Syntax.NumberType()}, Syntax.ListType());
+		return SyntaxJ.reporterSyntax(new int[]{Syntax.WildcardType(), Syntax.ReporterType(), Syntax.ListType(), Syntax.NumberType()}, Syntax.ListType());
 	}
 	
-	/** Returns n random facts satisfying the given condition from the specified fact base. The first argument {@link args[0]} has
-	 * to be a fact base, the second argument {@link args[1]} has to be a reporter task, the third argument has to be a list of
+	/** Returns n random facts satisfying the given condition from the specified fact base. The first argument {@code args[0]} has
+	 * to be a fact base, the second argument {@code args[1]} has to be a reporter task, the third argument has to be a list of
 	 * field names corresponding to the formal arguments used in the task, and the fourth argument has to be an integer number.
 	 * Generates an error if n > number of possible facts.
 	 * 

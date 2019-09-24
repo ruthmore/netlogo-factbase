@@ -27,13 +27,14 @@
 package org.cfpm.factbaseExtension;
 
 import org.nlogo.api.Argument;
+import org.nlogo.api.Command;
 import org.nlogo.api.Context;
-import org.nlogo.api.DefaultCommand;
 import org.nlogo.api.Dump;
 import org.nlogo.api.ExtensionException;
 import org.nlogo.api.LogoException;
-import org.nlogo.api.LogoList;
-import org.nlogo.api.Syntax;
+import org.nlogo.core.LogoList;
+import org.nlogo.core.Syntax;
+import org.nlogo.core.SyntaxJ;
 
 /** This class implements the "retract" primitive for the factbase extension. In Netlogo terms,
  * retracting a fact is a command, that means using the "retract" primitive does not return any
@@ -44,18 +45,18 @@ import org.nlogo.api.Syntax;
  * @author Ruth Meyer
  *
  */
-public class FactBaseRetract extends DefaultCommand {
+public class FactBaseRetract implements Command {
 
 	// expecting a factbase and a list (= fact) as input
 	/** The retract primitive expects a fact base and a list (= fact) as inputs.
 	 * 
 	 */
 	public Syntax getSyntax() {
-		return Syntax.commandSyntax(new int[]{Syntax.WildcardType(), Syntax.ListType()});
+		return SyntaxJ.commandSyntax(new int[]{Syntax.WildcardType(), Syntax.ListType()});
 	}
 
-	/** Performs the retraction. First argument {@link args[0]} has to be a fact base, second argument
-	 * {@link args[1]} has to be a list (the fact to be retracted).
+	/** Performs the retraction. First argument {@code args[0]} has to be a fact base, second argument
+	 * {@code args[1]} has to be a list (the fact to be retracted).
 	 * 
 	 *  @param args the arguments to this call of retract
 	 *  @param context the NetLogo context

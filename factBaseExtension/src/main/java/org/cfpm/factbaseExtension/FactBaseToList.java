@@ -28,11 +28,12 @@ package org.cfpm.factbaseExtension;
 
 import org.nlogo.api.Argument;
 import org.nlogo.api.Context;
-import org.nlogo.api.DefaultReporter;
 import org.nlogo.api.Dump;
 import org.nlogo.api.ExtensionException;
 import org.nlogo.api.LogoException;
-import org.nlogo.api.Syntax;
+import org.nlogo.api.Reporter;
+import org.nlogo.core.Syntax;
+import org.nlogo.core.SyntaxJ;
 
 /** This class implements the "to-list" primitive for the factbase extension. To-list
  * takes a fact base as input and returns it as a list of facts, including a list of field names as the first entry.
@@ -41,22 +42,22 @@ import org.nlogo.api.Syntax;
  *
  * @author Ruth Meyer
  */
-public class FactBaseToList extends DefaultReporter {
+public class FactBaseToList implements Reporter {
 
 	/** The primitive from-list expects a fact base as input and returns a list (of lists, 
 	 * with first entry the list of field names).
 	 */
 	public Syntax getSyntax() {
-		return Syntax.reporterSyntax(new int[]{Syntax.WildcardType()}, Syntax.ListType());
+		return SyntaxJ.reporterSyntax(new int[]{Syntax.WildcardType()}, Syntax.ListType());
 	}
 	
 	/** Reports the given fact base in the form of a list of lists, with the list of field names as the first entry.
-	 *  The first argument {@link args[0]} has to be a fact base.
+	 *  The first argument {@code args[0]} has to be a fact base.
 	 * 
 	 * @param args the arguments to this call of to-list
 	 * @param context the NetLogo context
 	 * @return the fact base as a list
-	 * @throw ExtensionException if the argument is invalid
+	 * @throws ExtensionException if the argument is invalid
 	 * @see org.nlogo.api.Reporter#report(org.nlogo.api.Argument[], org.nlogo.api.Context)
 	 */
 	@Override

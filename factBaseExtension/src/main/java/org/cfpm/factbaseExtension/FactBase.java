@@ -26,23 +26,18 @@
 
 package org.cfpm.factbaseExtension;
 
+import org.nlogo.api.ExtensionException;
+import org.nlogo.api.LogoException;
+import org.nlogo.api.LogoListBuilder;
+import org.nlogo.core.ExtensionObject;
+import org.nlogo.core.LogoList;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
-import java.util.StringTokenizer;
-
-
-import org.nlogo.api.Context;
-import org.nlogo.api.ExtensionException;
-import org.nlogo.api.ExtensionObject;
-import org.nlogo.api.LogoException;
-import org.nlogo.api.LogoList;
-import org.nlogo.api.LogoListBuilder;
 
 
 /** This class implements the data type "fact base" that the factbase extension provides. A fact base can be thought of as a table with named
@@ -71,7 +66,7 @@ public class FactBase implements ExtensionObject {
 	/** The next available ID for a new fact */
 	private int nextFactID = 0;
 	/** Additional copy of facts as an ordered list for easy access via fact ID */
-	private List<List<Object>> orderedFacts = new ArrayList<List<Object>>();  
+	private List<LogoList> orderedFacts = new ArrayList<LogoList>();
 		// PROBLEM: need to clone facts before storing them so they can't be changed from the outside
 		// so for the ordered list of facts we either need an internal Fact class or (deep-)clone the list
 	/** List of IDs of retracted facts */
@@ -161,7 +156,7 @@ public class FactBase implements ExtensionObject {
 	 * @return the ID for the new fact (or the identical old fact)
 	 * @throws ExtensionException is thrown if the fact does not match the structure of this fact base (too many or too few fields)
 	 */
-	public int assertFact(List<Object> fact) throws ExtensionException {
+	public int assertFact(LogoList fact) throws ExtensionException {
 		// check if fact matches fields
 		// 1. length of fact = number of field names?
 		if (fact.size() != fieldNames.length) {
@@ -209,13 +204,13 @@ public class FactBase implements ExtensionObject {
 	 * @param fact the fact to be cloned
 	 * @return a shallow copy of the given fact
 	 */
-	private List<Object> clone(List<Object> fact) {
+	private LogoList clone(LogoList fact) {
 		List<Object> fcopy = new ArrayList<Object>();
-		for (Iterator<Object> i = fact.iterator(); i.hasNext(); ) {
+		for (Iterator<Object> i = fact.javaIterator(); i.hasNext(); ) {
 			Object field = i.next();
 			fcopy.add(field); // only make a shallow copy
 		}
-		return fcopy;
+		return LogoList.fromJava(fcopy);
 	}
 	
 
@@ -228,7 +223,7 @@ public class FactBase implements ExtensionObject {
 	 * @param fact the fact to be removed
 	 * @throws ExtensionException if the given fact's structure does not match the structure of the fact base
 	 */
-	public void removeFact(List<Object> fact) throws ExtensionException {
+	public void removeFact(LogoList fact) throws ExtensionException {
 		// check if fact matches fields
 		// 1. length of fact = number of field names?
 		if (fact.size() != fieldNames.length) {
@@ -311,7 +306,7 @@ public class FactBase implements ExtensionObject {
 	 * @return the fact's ID (or -1 if the fact is not found in the fact base)
 	 * @throws ExtensionException if more than one fact identical to the given facts are found (which should not happen!)
 	 */
-	public int containsFact(List<Object> fact) throws ExtensionException {
+	public int containsFact(LogoList fact) throws ExtensionException {
 		dump("checking if fact " + printFact(fact) + " is in the factbase");
 		// if factbase is emtpy, fact is not in it
 		if (facts.get(0).isEmpty()) {
@@ -384,7 +379,7 @@ public class FactBase implements ExtensionObject {
 	 * @return the fact associated with the given ID
 	 * @throws ExtensionException if the fact ID is invalid or the fact with this ID was retracted or if (part of) the fact cannot be found
 	 */
-	public List<Object> retrieveFact(int factID) 
+	public LogoList retrieveFact(int factID)
 			throws ExtensionException 
 	{
 		// if factID is invalid, throw an exception
@@ -415,7 +410,7 @@ public class FactBase implements ExtensionObject {
 				throw new ExtensionException ("could not find (part of) fact with id " + factID);
 			}
 		}
-		return fact;
+		return LogoList.fromJava(fact);
 	}
 	
 //	public List<List<Object>> retrieveFacts (String condition, Context context) throws ExtensionException {
@@ -523,8 +518,8 @@ public class FactBase implements ExtensionObject {
 		buff.append(")\n---------------------------------------------------------");
 		// iterate over ordered facts
 		int factID = 0;
-		for (Iterator<List<Object>> ifacts = orderedFacts.iterator(); ifacts.hasNext(); ) {
-			List<Object> fact = ifacts.next();
+		for (Iterator<LogoList> ifacts = orderedFacts.iterator(); ifacts.hasNext(); ) {
+			LogoList fact = ifacts.next();
 			// need to skip deleted entries
 			if (fact != null) {
 				buff.append("\n" + factID + ": ");
@@ -564,9 +559,9 @@ public class FactBase implements ExtensionObject {
 	 * @param fact the fact to be printed
 	 * @return the fact as String
 	 */
-	protected String printFact(List<Object> fact) {
+	protected String printFact(LogoList fact) {
 		StringBuilder buff = new StringBuilder("( ");
-		for (Object o : fact) {
+		for (Object o : fact.javaIterable()) {
 			if (o instanceof Collection) {
 				// make a list representation of it
 				buff.append("[");
@@ -643,7 +638,7 @@ public class FactBase implements ExtensionObject {
 	
 	
 	/** 
-	 * @see org.nlogo.api.ExtensionObject#dump(boolean, boolean, boolean)
+	 * @see org.nlogo.core.ExtensionObject#dump(boolean, boolean, boolean)
 	 */
 	@Override
 	public String dump(boolean readable, boolean exportable, boolean reference) {
@@ -669,11 +664,11 @@ public class FactBase implements ExtensionObject {
 		// stick facts in 
 //		try {
 			// iterate over ordered facts
-			for (Iterator<List<Object>> i = orderedFacts.iterator(); i.hasNext(); ) {
-				List<Object> fact = i.next();
+			for (Iterator<LogoList> i = orderedFacts.iterator(); i.hasNext(); ) {
+				LogoList fact = i.next();
 				// need to skip deleted entries
 				if (fact != null) {
-					base.add(convertToLogoList(fact));
+					base.add(fact);
 				}
 			}
 //			for (int i = 0; i < nextFactID; i++) {
@@ -693,7 +688,7 @@ public class FactBase implements ExtensionObject {
 	 * @param objArray the object array to be converted
 	 * @return a LogoList representation of the given object array
 	 */
-	private List<Object> convertToLogoList(Object[] objArray) {
+	static LogoList convertToLogoList(Object[] objArray) {
 		LogoListBuilder list = new LogoListBuilder();
 		for (Object o : objArray) {
 			list.add(o);
@@ -707,7 +702,7 @@ public class FactBase implements ExtensionObject {
 	 * @param objList the object list to be converted
 	 * @return a LogoList representation of the given object list
 	 */
-	private List<Object> convertToLogoList(List<Object> objList) {
+	static LogoList convertToLogoList(List<Object> objList) {
 		LogoListBuilder list = new LogoListBuilder();
 		for (Object o : objList) {
 			list.add(o);
@@ -717,7 +712,7 @@ public class FactBase implements ExtensionObject {
 
 	/** Returns this extension's name.
 	 * 
-	 * @see org.nlogo.api.ExtensionObject#getExtensionName()
+	 * @see org.nlogo.core.ExtensionObject#getExtensionName()
 	 */
 	@Override
 	public String getExtensionName() {
@@ -725,7 +720,7 @@ public class FactBase implements ExtensionObject {
 	}
 
 	/** 
-	 * @see org.nlogo.api.ExtensionObject#getNLTypeName()
+	 * @see org.nlogo.core.ExtensionObject#getNLTypeName()
 	 */
 	@Override
 	public String getNLTypeName() {
@@ -737,7 +732,7 @@ public class FactBase implements ExtensionObject {
 	}
 
 	/** 
-	 * @see org.nlogo.api.ExtensionObject#recursivelyEqual(java.lang.Object)
+	 * @see org.nlogo.core.ExtensionObject#recursivelyEqual(java.lang.Object)
 	 */
 	@Override
 	public boolean recursivelyEqual(Object o) {
@@ -759,8 +754,8 @@ public class FactBase implements ExtensionObject {
 		// check every fact
 		try {
 			// iterate over ordered facts
-			for (Iterator<List<Object>> i = orderedFacts.iterator(); i.hasNext(); ) {
-				List<Object> fact = i.next();
+			for (Iterator<LogoList> i = orderedFacts.iterator(); i.hasNext(); ) {
+				LogoList fact = i.next();
 				if (fact != null && other.containsFact(fact) < 0) {
 					// fact is not in other factbase
 					return false;
@@ -838,30 +833,30 @@ public class FactBase implements ExtensionObject {
 		List<Object> fact = new ArrayList<Object>();
 		System.out.println("\nAsserting first fact...");
 		fact.add("Boris"); fact.add(true); fact.add("cat");
-		fb.assertFact(fact);
-		fb3.assertFact(fact);
+		fb.assertFact(convertToLogoList(fact));
+		fb3.assertFact(convertToLogoList(fact));
 		System.out.println(fb.toString());
 		System.out.println("\nAsserting second fact...");
 		fact = new ArrayList<Object>();
 		fact.add("Felix"); fact.add(true); fact.add("cat");
-		fb.assertFact(fact);
-		fb3.assertFact(fact);
+		fb.assertFact(convertToLogoList(fact));
+		fb3.assertFact(convertToLogoList(fact));
 		System.out.println(fb.toString());
 		System.out.println("\nAsserting third fact...");
 		fact = new ArrayList<Object>();
 		fact.add("Kitty"); fact.add(false); fact.add("guinea pig");
-		fb.assertFact(fact);
-		fb3.assertFact(fact);
+		fb.assertFact(convertToLogoList(fact));
+		fb3.assertFact(convertToLogoList(fact));
 		System.out.println(fb.toString());
 		// testing assert of existing fact
 		System.out.println("\nTrying to assert third fact again...");
-		fb.assertFact(fact);
+		fb.assertFact(convertToLogoList(fact));
 		System.out.println(fb.toString());
 		System.out.println("\nAsserting fourth fact...");
 		fact = new ArrayList<Object>();
 		fact.add("Mieze"); fact.add(false); fact.add("cat");
-		fb.assertFact(fact);
-		fb3.assertFact(fact);
+		fb.assertFact(convertToLogoList(fact));
+		fb3.assertFact(convertToLogoList(fact));
 		System.out.println(fb.toString());
 		
 		System.out.println("\nAre fb and fb2 recursivley equal? " + fb.recursivelyEqual(fb2));
@@ -869,22 +864,22 @@ public class FactBase implements ExtensionObject {
 		
 		fact = new ArrayList<Object>();
 		fact.add("Boris"); fact.add(false); fact.add("dog");
-		fb.assertFact(fact);
+		fb.assertFact(convertToLogoList(fact));
 		System.out.println(fb.toString());
 		System.out.println(fb.orderedFactsToString());
 		fact.clear(); // = new ArrayList<Object>();
 		fact.add("Boris"); fact.add(true); fact.add("dog");
-		fb.assertFact(fact);
+		fb.assertFact(convertToLogoList(fact));
 		System.out.println(fb.toString());
 		
 		FactBase test = new FactBase(new String[]{"x", "y", "cost", "alist"});
 		fact = new ArrayList<Object>();
 		fact.add(0); fact.add(-1); fact.add(5); fact.add(makeAList(new Object[]{2,3,4}));
-		test.assertFact(fact);
+		test.assertFact(convertToLogoList(fact));
 		System.out.println(test);
 		fact = new ArrayList<Object>();
 		fact.add(0); fact.add(-2); fact.add(3); fact.add(makeAList(new Object[]{"alpha", "beta", "gamma", "delta"}));
-		test.assertFact(fact);
+		test.assertFact(convertToLogoList(fact));
 		System.out.println(test);
 		
 		// unit test retrieve with condition
@@ -924,12 +919,12 @@ public class FactBase implements ExtensionObject {
 		System.out.println(fb.toString());
 		fact = new ArrayList<Object>();
 		fact.add("Felix"); fact.add(true); fact.add("cat");
-		System.out.println("\nretracting " + fb.printFact(fact));
+		System.out.println("\nretracting " + fb.printFact(convertToLogoList(fact)));
 		System.out.println("\nSTATE OF INDEXED FIELDS BEFORE RETRACTION");
 		for (int j = 0 ; j < fb.facts.size(); j++){
 			fb.printIndexedField(j);
 		}
-		fb.removeFact(fact);
+		fb.removeFact(convertToLogoList(fact));
 		System.out.println("\nResult is:");
 		System.out.println(fb.toString());
 		
@@ -940,8 +935,8 @@ public class FactBase implements ExtensionObject {
 
 		fact = new ArrayList<Object>();
 		fact.add("Boris"); fact.add(false); fact.add("dog");
-		System.out.println("\nretracting " + fb.printFact(fact));
-		fb.removeFact(fact);
+		System.out.println("\nretracting " + fb.printFact(convertToLogoList(fact)));
+		fb.removeFact(convertToLogoList(fact));
 		System.out.println("Result is:");
 		System.out.println(fb.toString());
 		
@@ -954,8 +949,8 @@ public class FactBase implements ExtensionObject {
 		System.out.println("\nTrying to retract a fact that's not there");
 		fact = new ArrayList<Object>();
 		fact.add("Boris"); fact.add(false); fact.add("dog");
-		System.out.println("\nretracting " + fb.printFact(fact));
-		fb.removeFact(fact);
+		System.out.println("\nretracting " + fb.printFact(convertToLogoList(fact)));
+		fb.removeFact(convertToLogoList(fact));
 		System.out.println("Result is:");
 		System.out.println(fb.toString());
 		
@@ -987,7 +982,7 @@ public class FactBase implements ExtensionObject {
 		while (n > 0) {
 			// pick a random fact
 			int i = sample.nextInt(n);
-			List<Object> randomFact = fb.retrieveFact(i);
+			LogoList randomFact = fb.retrieveFact(i);
 			System.out.println("-- picking fact " + i + ": " + fb.printFact(randomFact));
 			fb.removeFact(randomFact);
 			System.out.println(fb.toString());			
@@ -1017,7 +1012,7 @@ public class FactBase implements ExtensionObject {
 	 */
 	private String orderedFactsToString() {
 		StringBuilder buf = new StringBuilder();
-		for (List<Object> f : orderedFacts) {
+		for (LogoList f : orderedFacts) {
 			// need to skip deleted entries
 			if (f != null) {
 				buf.append(printFact(f));
