@@ -28,7 +28,6 @@ package org.cfpm.factbaseExtension;
 
 import org.nlogo.api.Argument;
 import org.nlogo.api.Context;
-import org.nlogo.api.Dump;
 import org.nlogo.api.ExtensionException;
 import org.nlogo.api.LogoException;
 import org.nlogo.api.LogoListBuilder;
@@ -38,7 +37,6 @@ import org.nlogo.core.Syntax;
 import org.nlogo.core.SyntaxJ;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /** This class implements the "n-of" primitive for the factbase extension. N-of retrieves n
  * random facts satisfying the specified condition from the given fact base. It is an error
@@ -69,18 +67,14 @@ public class FactBaseNOf implements Reporter {
 	 * @param args the arguments to this call of n-of
 	 * @param context the NetLogo context
 	 * @return list of n random facts satisfying the given condition
-	 * @throw ExtensionException if any of the arguments are invalid
+	 * @throws ExtensionException if any of the arguments are invalid
 	 * @see org.nlogo.api.Reporter#report(org.nlogo.api.Argument[], org.nlogo.api.Context)
 	 */
 	@Override
 	public Object report(Argument[] args, Context context) throws ExtensionException, LogoException 
 	{
 		// determine parameter n from args (args[0] = factbase, args[1] = reporter task. args[2] = list of field names, args[3] = n
-		Object arg3 = args[3].get();
-		if (! ((arg3 instanceof Double) || (arg3 instanceof Integer))) {
-			throw new ExtensionException ("not a number: " + Dump.logoObject(arg3));
-		}
-		int n = ((Double)arg3).intValue();
+		int n = args[3].getIntValue();
 		// all the work is done in the retrieval class
 		// easy way to determine n-of: retrieve ALL facts that satisfy the condition, then pick n random ones
 		Retrieval r = new Retrieval(args, context);
@@ -91,8 +85,8 @@ public class FactBaseNOf implements Reporter {
 		}
 		// now pick n random facts from result without repeats
 		// -- done as picking (and removing) from list of indices since removing from a LogoList gives an UnsupportedOperationException
-		ArrayList<Integer> possible = new ArrayList<Integer>();
-		ArrayList<Integer> chosen = new ArrayList<Integer>();
+		ArrayList<Integer> possible = new ArrayList<>();
+		ArrayList<Integer> chosen = new ArrayList<>();
 		for (int i = 0; i < result.size(); i++) {
 			possible.add(i);
 		}
@@ -106,8 +100,8 @@ public class FactBaseNOf implements Reporter {
 			FactBaseExtension.writeToNetLogo("possible = " + printArrayList(possible), false, context);
 		}
 		LogoListBuilder picked = new LogoListBuilder();
-		for (Iterator<Integer> it = chosen.iterator(); it.hasNext(); ) {
-			picked.add(result.get(it.next()));
+		for (Integer integer : chosen) {
+			picked.add(result.get(integer));
 		}
 		return picked.toLogoList();
 	}

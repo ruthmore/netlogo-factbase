@@ -38,7 +38,7 @@ import org.nlogo.core.SyntaxJ;
 
 import java.util.Iterator;
 
-/** This class implements the "assert-all" primitive for the factbase extension. In Netlogo terms,
+/** This class implements the "assert-all" primitive for the factbase extension. In NetLogo terms,
  * asserting a list of facts is a command, that means using the assert-all primitive does not return any
  * result. If the facts to be asserted are already contained in the fact base, nothing happens.
  * 

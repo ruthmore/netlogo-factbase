@@ -62,7 +62,7 @@ public class FactBaseExists implements Reporter {
 	 * @param args the arguments to this call of exists?
 	 * @param context the NetLogo context
 	 * @return true, if a fact is found; otherwise, false
-	 * @throw ExtensionException if any of the arguments are invalid
+	 * @throws ExtensionException if any of the arguments are invalid
 	 * @see org.nlogo.api.Reporter#report(org.nlogo.api.Argument[], org.nlogo.api.Context)
 	 */
 	@Override

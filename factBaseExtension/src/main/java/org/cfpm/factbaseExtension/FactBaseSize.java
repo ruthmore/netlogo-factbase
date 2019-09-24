@@ -68,7 +68,7 @@ public class FactBaseSize implements Reporter {
 	      if (!(arg0 instanceof FactBase)) {
 	        throw new ExtensionException ("not a factbase: " + Dump.logoObject(arg0));
 	      }
-	      return Double.valueOf(((FactBase) arg0).size());
+	      return (double) ((FactBase) arg0).size();
 	}
 
 }

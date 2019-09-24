@@ -36,7 +36,7 @@ import org.nlogo.core.LogoList;
 import org.nlogo.core.Syntax;
 import org.nlogo.core.SyntaxJ;
 
-/** This class implements the "assert" primitive for the factbase extension. In Netlogo terms,
+/** This class implements the "assert" primitive for the factbase extension. In NetLogo terms,
  * asserting a fact is a command, that means using the "assert" primitive does not return any
  * result. If the fact to be asserted is already contained in the fact base, nothing happens.
  * 

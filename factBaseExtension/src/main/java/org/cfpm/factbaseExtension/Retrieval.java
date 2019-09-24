@@ -26,7 +26,6 @@
 
 package org.cfpm.factbaseExtension;
 
-import org.nlogo.nvm.AnonymousReporter;
 import org.nlogo.api.Argument;
 import org.nlogo.api.Context;
 import org.nlogo.api.Dump;
@@ -34,10 +33,10 @@ import org.nlogo.api.ExtensionException;
 import org.nlogo.api.LogoException;
 import org.nlogo.api.LogoListBuilder;
 import org.nlogo.core.LogoList;
+import org.nlogo.nvm.AnonymousReporter;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 /** This class provides the necessary functionality for retrieval from a fact base. It is used by several of the primitives
  * (retrieve, retrieve-to, exists?, retract-all, one-of, n-of).
@@ -48,17 +47,17 @@ import java.util.List;
 public class Retrieval {
 
 	/** The fact base to be used. */
-	FactBase fb;
+	private FactBase fb;
 	/** The task specifying the retrieval condition. */
-	AnonymousReporter task;
+	private AnonymousReporter task;
 	/** The list of fields corresponding to the formal parameters of the task. */
-	LogoList fields;
+	private LogoList fields;
 	/** The indices of the fields, stored for easy access later */
-	int[] fIndices;
+	private int[] fIndices;
 	/** The NetLogo context, needed to execute the task */
-	Context context;
+	private Context context;
 	/** Indices of the output fields (if specified) */
-	int[] outFIndices;
+	private int[] outFIndices;
 	
 	/** Constructor of the retrieval class. It is passed the arguments and the context directly from the primitive calling it,
 	 * then checks and stores these arguments plus the context for later use in the actual retrieval methods.
@@ -119,7 +118,7 @@ public class Retrieval {
 	 * @throws ExtensionException
 	 * @throws LogoException
 	 */
-	public LogoList retrieveAll() throws ExtensionException, LogoException {
+	LogoList retrieveAll() throws ExtensionException, LogoException {
 		// now for every fact (specifically: every value of the defined fields) we have to run the reporter task
 		// if it evaluates to TRUE, the fact has to be stored in the results list
 		LogoListBuilder results = new LogoListBuilder();
@@ -155,7 +154,7 @@ public class Retrieval {
 			return fact;
 		}
 		// apply the filter
-		ArrayList<Object> filteredFact = new ArrayList<Object>();
+		ArrayList<Object> filteredFact = new ArrayList<>();
 		for (int i : outFIndices) {
 			filteredFact.add(fact.get(i));
 		}
@@ -169,7 +168,7 @@ public class Retrieval {
 	 * @throws ExtensionException
 	 * @throws LogoException
 	 */
-	public LogoList retrieveFirst() throws ExtensionException, LogoException {
+	LogoList retrieveFirst() throws ExtensionException, LogoException {
 		// now for every fact (specifically: every value of the defined fields) we have to run the reporter task
 		// until it evaluates to TRUE, then we can abort the search and return the found fact
 		// otherwise we have to keep searching until we can return null when nothing matching is found
@@ -234,7 +233,7 @@ public class Retrieval {
 	/** Helper method: returns a string representation of the given array of integers.
 	 * 
 	 * @param nums
-	 * @return
+	 * @return a string representation of the given array of integers
 	 */
 	private String printArray(int[] nums) {
 		StringBuilder buff = new StringBuilder("[");
@@ -249,7 +248,7 @@ public class Retrieval {
 	/** Helper method: returns a string representation of the given array of objects.
 	 * 
 	 * @param objs
-	 * @return
+	 * @return a string representation of the given array of objects
 	 */
 	private String printArray(Object[] objs) {
 		StringBuilder buff = new StringBuilder("[");
@@ -263,8 +262,8 @@ public class Retrieval {
 
 	/** Helper method: returns a string representation of the given array list of objects.
 	 * 
-	 * @param objs
-	 * @return
+	 * @param objs array list of objects
+	 * @return a string representation of the given array list of objects
 	 */
 	private String printArrayList(ArrayList<Object> objs) {
 		StringBuilder buff = new StringBuilder("[");
@@ -280,7 +279,7 @@ public class Retrieval {
 	 * 
 	 * @return the fact base this retrieval object works with
 	 */
-	public FactBase getFactBase() {
+	FactBase getFactBase() {
 		return fb;
 	}
 	

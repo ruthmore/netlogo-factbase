@@ -32,7 +32,6 @@ import org.nlogo.api.Dump;
 import org.nlogo.api.ExtensionException;
 import org.nlogo.api.LogoException;
 import org.nlogo.api.Reporter;
-import org.nlogo.core.LogoList;
 import org.nlogo.core.Syntax;
 import org.nlogo.core.SyntaxJ;
 
@@ -73,14 +72,8 @@ public class FactBaseGet implements Reporter {
 		if (! (arg0 instanceof FactBase)) {
 	        throw new ExtensionException ("not a factbase: " + Dump.logoObject(arg0));
 		}
-		Object arg1 = args[1].get();
-		if (! ((arg1 instanceof Double) || (arg1 instanceof Integer))) {
-			throw new ExtensionException ("not a number: " + Dump.logoObject(arg1));
-		}
 		FactBase fb = (FactBase)arg0;
-		int i = ((Double)arg1).intValue();
-		LogoList fact =  fb.retrieveFact(i);  // checking of ID happens in retrieveFact()
-		return fact;
+		return fb.retrieveFact(args[1].getIntValue());
 	}
 
 }

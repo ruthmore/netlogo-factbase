@@ -78,7 +78,7 @@ public class FactBaseRAssert implements Reporter {
 			// try and assert it. All checks of the fact are done in assertFact()
 			// this will throw an ExtensionException if things go wrong
 			int id = fb.assertFact(arg1); 
-			return Double.valueOf(id);
+			return (double) id;
 		}
 		catch (LogoException e) {
 			throw new ExtensionException ("not a list: " + Dump.logoObject(args[1]));

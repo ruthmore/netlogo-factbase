@@ -63,7 +63,7 @@ public class FactBaseRetractAll implements Command {
 	 * 
 	 * @param args the arguments to this call of retract-all
 	 * @param context the NetLogo context
-	 * @throw ExtensionException if any of the arguments are invalid
+	 * @throws ExtensionException if any of the arguments are invalid
 	 * @see org.nlogo.api.Command#perform(org.nlogo.api.Argument[], org.nlogo.api.Context)
 	 */
 	@Override

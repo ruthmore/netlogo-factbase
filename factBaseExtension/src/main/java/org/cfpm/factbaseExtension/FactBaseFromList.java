@@ -63,7 +63,7 @@ public class FactBaseFromList implements Reporter {
 	 * @param args the arguments to this call of from-list
 	 * @param context the NetLogo context
 	 * @return a reference to the newly created fact base
-	 * @throw ExtensionException if the argument is invalid
+	 * @throws ExtensionException if the argument is invalid
 	 * @see org.nlogo.api.Reporter#report(org.nlogo.api.Argument[], org.nlogo.api.Context)
 	 */
 	@Override
