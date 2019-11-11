@@ -1,0 +1,25 @@
+# SBT/Scala
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+.history
+.cache
+.lib/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# IntelliJ IDEA
+.scala_dependencies
+.worksheet
+.idea
+
+# other
+*.zip
+*.jar
+.bundledFiles

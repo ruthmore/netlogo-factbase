@@ -28,12 +28,13 @@ package org.cfpm.factbaseExtension;
 
 import org.nlogo.api.Argument;
 import org.nlogo.api.Context;
-import org.nlogo.api.DefaultReporter;
 import org.nlogo.api.Dump;
 import org.nlogo.api.ExtensionException;
 import org.nlogo.api.LogoException;
-import org.nlogo.api.LogoList;
-import org.nlogo.api.Syntax;
+import org.nlogo.api.Reporter;
+import org.nlogo.core.LogoList;
+import org.nlogo.core.Syntax;
+import org.nlogo.core.SyntaxJ;
 
 /** This class implements the "r-assert" primitive for the factbase extension, which is a variant
  * of assert (see {@link FactBaseAssert}). While assert is realised as a command, that means, it does
@@ -45,18 +46,18 @@ import org.nlogo.api.Syntax;
  * @author Ruth Meyer
  *
  */
-public class FactBaseRAssert extends DefaultReporter {
+public class FactBaseRAssert implements Reporter {
 
 	// expecting a factbase and a list (= fact) as input, returning a number (= fact ID)
 	/** The r-assert primitive expects a fact base and a list (= fact) as inputs and returns a number (= fact ID).
 	 * 
 	 */
 	public Syntax getSyntax() {
-		return Syntax.reporterSyntax(new int[]{Syntax.WildcardType(), Syntax.ListType()}, Syntax.NumberType());
+		return SyntaxJ.reporterSyntax(new int[]{Syntax.WildcardType(), Syntax.ListType()}, Syntax.NumberType());
 	}
 	
-	/** Performs the assertion. First argument {@link args[0]} has to be a fact base, second argument
-	 * {@link args[1]} has to be a list (the fact to be asserted). Returns the ID of the given fact.
+	/** Performs the assertion. First argument {@code args[0]} has to be a fact base, second argument
+	 * {@code args[1]} has to be a list (the fact to be asserted). Returns the ID of the given fact.
 	 * 
 	 *  @param args the arguments to this call of assert
 	 *  @param context the NetLogo context
@@ -77,7 +78,7 @@ public class FactBaseRAssert extends DefaultReporter {
 			// try and assert it. All checks of the fact are done in assertFact()
 			// this will throw an ExtensionException if things go wrong
 			int id = fb.assertFact(arg1); 
-			return Double.valueOf(id);
+			return (double) id;
 		}
 		catch (LogoException e) {
 			throw new ExtensionException ("not a list: " + Dump.logoObject(args[1]));

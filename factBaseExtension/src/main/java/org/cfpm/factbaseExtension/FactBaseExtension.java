@@ -26,21 +26,16 @@
 
 package org.cfpm.factbaseExtension;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.WeakHashMap;
-
 import org.nlogo.api.Context;
 import org.nlogo.api.DefaultClassManager;
 import org.nlogo.api.ExtensionException;
 import org.nlogo.api.LogoException;
-import org.nlogo.api.LogoList;
-import org.nlogo.api.LogoListBuilder;
+import org.nlogo.api.OutputDestinationJ;
 import org.nlogo.api.PrimitiveManager;
 import org.nlogo.nvm.ExtensionContext;
-import org.nlogo.nvm.Workspace.OutputDestination;
+
+import java.util.Random;
+import java.util.WeakHashMap;
 
 /** 
  * <!-- FactBaseExtension -->
@@ -58,7 +53,7 @@ public class FactBaseExtension extends DefaultClassManager {
 	/** Counter for the next available ID for a new factbase */
 	static protected int next = 0;
 	/** A hash table of all instantiated factbases */
-	static protected WeakHashMap<Integer, FactBase> bases = new WeakHashMap<Integer, FactBase>();
+	static WeakHashMap<Integer, FactBase> bases = new WeakHashMap<>();
 	
 	/** Flag to toggle output to NetLogo (if set to true, output will take place, if set to false, output will be ignored). 
 	 * In any deployed version of the extension the flag is set to false.
@@ -68,7 +63,7 @@ public class FactBaseExtension extends DefaultClassManager {
 	/** A random number generator to be used in primitives classes needing to pick arbitrary facts like one-of or n-of.
 	 * 
 	 */
-	static protected Random rng = new Random(); // ### to be replaced by MersenneTwister?
+	static Random rng = new Random(); // ### to be replaced by MersenneTwister?
 	
 
 	/** Specifies the primitives available for the factbase extension.
@@ -77,7 +72,7 @@ public class FactBaseExtension extends DefaultClassManager {
 	 * @see org.nlogo.api.DefaultClassManager#load(org.nlogo.api.PrimitiveManager)
 	 */
 	@Override
-	public void load(PrimitiveManager primManager) throws ExtensionException {
+	public void load(PrimitiveManager primManager) {
 		primManager.addPrimitive("create", new FactBaseCreate());
 		primManager.addPrimitive("assert", new FactBaseAssert());
 		primManager.addPrimitive("assert-all", new FactBaseAssertAll());
@@ -96,34 +91,6 @@ public class FactBaseExtension extends DefaultClassManager {
 		primManager.addPrimitive("r-assert", new FactBaseRAssert());
 		//primManager.addPrimitive("min-one-of", new FactBaseMinOneOf());
 	}
-	
-	/** Turns a fact (ArrayList of objects) into a NetLogo list (LogoList).
-	 * 
-	 * @param fact a list of objects (usually as an instance of ArrayList<Object>)
-	 * @return a list of the same objects as a LogoList
-	 * @see org.nlogo.api.LogoList
-	 */
-	protected static LogoList toLogoList(List<Object> fact) {
-		LogoListBuilder list = new LogoListBuilder();
-		for (Iterator<Object> it = fact.iterator(); it.hasNext(); ) {
-			list.add(it.next());
-		}
-		return list.toLogoList();
-	}
-	
-	/** Turns a LogoList (a NetLogo list object) into an ArrayList<Object>, which is the data type used to represent facts
-	 * in the factbase extension.
-	 * 
-	 * @param llist a list of objects as a LogoList
-	 * @return a list of the same objects as an ArrayList
-	 */
-	protected static List<Object> toFact(LogoList llist) {
-		List<Object> fact = new ArrayList<Object>();
-		for (Iterator<Object> it = llist.iterator(); it.hasNext(); ) {
-			fact.add(it.next());
-		}
-		return fact;
-	}
 
 	/** Writes the given text to the NetLogo command center if the internal flag {@link #outputToNetlogo} is set to true.
 	 * This method is solely intended for debugging purposes while developing the extension. 
@@ -134,7 +101,7 @@ public class FactBaseExtension extends DefaultClassManager {
 	 * @param context	the NetLogo context
 	 * @throws ExtensionException if writing fails for some reason
 	 */
-	protected static void writeToNetLogo(String mssg, Boolean toOutputArea, Context context) 
+	static void writeToNetLogo(String mssg, Boolean toOutputArea, Context context)
 			throws ExtensionException
 		{ 
 				/* Instructions on writing to the command center as related by Seth Tissue: 
@@ -160,7 +127,7 @@ public class FactBaseExtension extends DefaultClassManager {
 				ExtensionContext extcontext = (ExtensionContext) context; 
 				try {
 					extcontext.workspace().outputObject(mssg, null, true, true,
-							(toOutputArea) ? OutputDestination.OUTPUT_AREA : OutputDestination.NORMAL); 
+							(toOutputArea) ? OutputDestinationJ.OUTPUT_AREA() : OutputDestinationJ.NORMAL());
 				} 
 				catch (LogoException e) {
 					throw new ExtensionException(e); 

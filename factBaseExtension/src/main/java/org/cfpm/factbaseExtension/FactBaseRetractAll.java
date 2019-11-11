@@ -26,17 +26,16 @@
 
 package org.cfpm.factbaseExtension;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.nlogo.api.Argument;
+import org.nlogo.api.Command;
 import org.nlogo.api.Context;
-import org.nlogo.api.DefaultCommand;
-import org.nlogo.api.Dump;
 import org.nlogo.api.ExtensionException;
 import org.nlogo.api.LogoException;
-import org.nlogo.api.LogoList;
-import org.nlogo.api.Syntax;
+import org.nlogo.core.LogoList;
+import org.nlogo.core.Syntax;
+import org.nlogo.core.SyntaxJ;
+
+import java.util.Iterator;
 
 /** This class implements the "retract-all" primitive for the factbase extension. Retract-all finds all facts
  * satisfying the given condition and then retracts them from the fact base.  If there are no such facts,
@@ -47,7 +46,7 @@ import org.nlogo.api.Syntax;
  * @author Ruth Meyer
  *
  */
-public class FactBaseRetractAll extends DefaultCommand {
+public class FactBaseRetractAll implements Command {
 
 	// expects a reference to the factbase and a condition (as ReporterTask and List of field names) as input
 	/** The retract-all primitive expects a fact base and a condition (specified as a reporter task and a list of 
@@ -55,16 +54,16 @@ public class FactBaseRetractAll extends DefaultCommand {
 	 * 
 	 */
 	public Syntax getSyntax() {
-		return Syntax.commandSyntax(new int[]{Syntax.WildcardType(), Syntax.ReporterTaskType(), Syntax.ListType()});
+		return SyntaxJ.commandSyntax(new int[]{Syntax.WildcardType(), Syntax.ReporterType(), Syntax.ListType()});
 	}
 
-	/** Retracts all facts satisfying the given condition from the specified fact base. The first argument {@link args[0]} has
-	 * to be a fact base, the second argument {@link args[1]} has to be a reporter task and the third argument has to be a list of
+	/** Retracts all facts satisfying the given condition from the specified fact base. The first argument {@code args[0]} has
+	 * to be a fact base, the second argument {@code args[1]} has to be a reporter task and the third argument has to be a list of
 	 * field names corresponding to the formal arguments used in the task.
 	 * 
 	 * @param args the arguments to this call of retract-all
 	 * @param context the NetLogo context
-	 * @throw ExtensionException if any of the arguments are invalid
+	 * @throws ExtensionException if any of the arguments are invalid
 	 * @see org.nlogo.api.Command#perform(org.nlogo.api.Argument[], org.nlogo.api.Context)
 	 */
 	@Override
@@ -76,9 +75,9 @@ public class FactBaseRetractAll extends DefaultCommand {
 		FactBaseExtension.writeToNetLogo("Result has " + selectedFacts.size() + " facts: " + selectedFacts.toString(), false, context);
 		// retract the selected facts
 		FactBase fb = retrieval.getFactBase();
-		for (Iterator<Object> fi = selectedFacts.iterator(); fi.hasNext(); ) {
+		for (Iterator<Object> fi = selectedFacts.javaIterator(); fi.hasNext(); ) {
 			LogoList fact = (LogoList)fi.next();  // retrieve made facts be LogoLists
-			fb.removeFact(FactBaseExtension.toFact(fact));
+			fb.removeFact(fact);
 		}
 		// and we're finished
 		FactBaseExtension.writeToNetLogo("selected facts have been retracted", false, context);

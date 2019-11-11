@@ -26,17 +26,14 @@
 
 package org.cfpm.factbaseExtension;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.nlogo.api.Argument;
 import org.nlogo.api.Context;
-import org.nlogo.api.DefaultReporter;
 import org.nlogo.api.Dump;
 import org.nlogo.api.ExtensionException;
 import org.nlogo.api.LogoException;
-import org.nlogo.api.LogoListBuilder;
-import org.nlogo.api.Syntax;
+import org.nlogo.api.Reporter;
+import org.nlogo.core.Syntax;
+import org.nlogo.core.SyntaxJ;
 
 /** This class implements the "get" primitive for the factbase extension. Get takes a fact base
  * and an integer (fact ID) as inputs and returns the fact with the specified ID. Generates an
@@ -47,7 +44,7 @@ import org.nlogo.api.Syntax;
  * @author Ruth Meyer
  *
  */
-public class FactBaseGet extends DefaultReporter {
+public class FactBaseGet implements Reporter {
 
 	// expects a reference to the factbase and an index, returns the fact with the given index (or generates an error)
 	/** Get expects a fact base and an integer number (fact ID) as inputs, returns a list (the fact with the 
@@ -55,17 +52,17 @@ public class FactBaseGet extends DefaultReporter {
 	 * 
 	 */
 	public Syntax getSyntax() {
-		return Syntax.reporterSyntax(new int[]{Syntax.WildcardType(), Syntax.NumberType()}, Syntax.ListType());
+		return SyntaxJ.reporterSyntax(new int[]{Syntax.WildcardType(), Syntax.NumberType()}, Syntax.ListType());
 	}
 	
-	/** Reports the fact with the given ID from the specified fact base. The first argument {@link args[0]} has
-	 * to be a fact base, the second argument {@link args[1]} has to be a valid fact ID. Generates an error if 
+	/** Reports the fact with the given ID from the specified fact base. The first argument {@code args[0]} has
+	 * to be a fact base, the second argument {@code args[1]} has to be a valid fact ID. Generates an error if
 	 * the given ID is invalid (no fact with such an ID exists).
 	 * 
 	 * @param args the arguments to this call of get
 	 * @param context the NetLogo context
 	 * @return the fact with the given ID
-	 * @throw ExtensionException if any of the arguments are invalid
+	 * @throws ExtensionException if any of the arguments are invalid
 	 * @see org.nlogo.api.Reporter#report(org.nlogo.api.Argument[], org.nlogo.api.Context)
 	 */
 	@Override
@@ -75,15 +72,8 @@ public class FactBaseGet extends DefaultReporter {
 		if (! (arg0 instanceof FactBase)) {
 	        throw new ExtensionException ("not a factbase: " + Dump.logoObject(arg0));
 		}
-		Object arg1 = args[1].get();
-		if (! ((arg1 instanceof Double) || (arg1 instanceof Integer))) {
-			throw new ExtensionException ("not a number: " + Dump.logoObject(arg1));
-		}
 		FactBase fb = (FactBase)arg0;
-		int i = ((Double)arg1).intValue();
-		List<Object> fact =  fb.retrieveFact(i);  // checking of ID happens in retrieveFact()
-		// turn into LogoList before returning
-		return FactBaseExtension.toLogoList(fact);
+		return fb.retrieveFact(args[1].getIntValue());
 	}
 
 }

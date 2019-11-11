@@ -26,18 +26,14 @@
 
 package org.cfpm.factbaseExtension;
 
-import java.util.List;
-
 import org.nlogo.api.Argument;
 import org.nlogo.api.Context;
-import org.nlogo.api.DefaultReporter;
-import org.nlogo.api.Dump;
 import org.nlogo.api.ExtensionException;
 import org.nlogo.api.LogoException;
-import org.nlogo.api.LogoList;
-import org.nlogo.api.LogoListBuilder;
-import org.nlogo.api.Syntax;
-import org.nlogo.nvm.ReporterTask;
+import org.nlogo.api.Reporter;
+import org.nlogo.core.LogoList;
+import org.nlogo.core.Syntax;
+import org.nlogo.core.SyntaxJ;
 
 /** This class implements the "exists?" primitive for the factbase extension. It checks if a fact satisfying
  * the given condition exists in the specified fact base and returns true, if this is the case. Otherwise, it returns false.
@@ -47,7 +43,7 @@ import org.nlogo.nvm.ReporterTask;
  * @author Ruth Meyer
  *
  */
-public class FactBaseExists extends DefaultReporter {
+public class FactBaseExists implements Reporter {
 
 	// expecting a factbase and a a condition (as ReporterTask and List of field names) as input; returns true if there is at least one fact
 	// satisfying the condition in the factbase, otherwise false
@@ -55,18 +51,18 @@ public class FactBaseExists extends DefaultReporter {
 	 * inputs and returns a Boolean value.
 	 */
 	public Syntax getSyntax() {
-		return Syntax.reporterSyntax(new int[]{Syntax.WildcardType(),  Syntax.ReporterTaskType(), Syntax.ListType()}, Syntax.BooleanType());
+		return SyntaxJ.reporterSyntax(new int[]{Syntax.WildcardType(),  Syntax.ReporterType(), Syntax.ListType()}, Syntax.BooleanType());
 	}
 	
 	
-	/** Checks if a fact satisfying the given condition exists in the specified fact base. The first argument {@link args[0]} has
-	 * to be a fact base, the second argument {@link args[1]} has to be a reporter task and the third argument has to be a list of
+	/** Checks if a fact satisfying the given condition exists in the specified fact base. The first argument {@code args[0]} has
+	 * to be a fact base, the second argument {@code args[1]} has to be a reporter task and the third argument has to be a list of
 	 * field names corresponding to the formal arguments used in the task.
 	 * 
 	 * @param args the arguments to this call of exists?
 	 * @param context the NetLogo context
 	 * @return true, if a fact is found; otherwise, false
-	 * @throw ExtensionException if any of the arguments are invalid
+	 * @throws ExtensionException if any of the arguments are invalid
 	 * @see org.nlogo.api.Reporter#report(org.nlogo.api.Argument[], org.nlogo.api.Context)
 	 */
 	@Override

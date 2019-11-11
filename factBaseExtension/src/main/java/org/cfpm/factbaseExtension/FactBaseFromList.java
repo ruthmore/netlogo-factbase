@@ -26,18 +26,17 @@
 
 package org.cfpm.factbaseExtension;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.nlogo.api.Argument;
 import org.nlogo.api.Context;
-import org.nlogo.api.DefaultReporter;
 import org.nlogo.api.Dump;
 import org.nlogo.api.ExtensionException;
 import org.nlogo.api.LogoException;
-import org.nlogo.api.LogoList;
-import org.nlogo.api.Syntax;
-import org.nlogo.nvm.Reporter;
+import org.nlogo.api.Reporter;
+import org.nlogo.core.LogoList;
+import org.nlogo.core.Syntax;
+import org.nlogo.core.SyntaxJ;
+
+import java.util.Iterator;
 
 /** This class implements the "from-list" primitive for the factbase extension. From-list
  * takes a list of facts, including a list of field names as the first entry, as input and
@@ -47,7 +46,7 @@ import org.nlogo.nvm.Reporter;
  *
  * @author Ruth Meyer
  */
-public class FactBaseFromList extends DefaultReporter {
+public class FactBaseFromList implements Reporter {
 
 	// expects a list (of lists), returns a reference to the newly created factbase
 	/** The primitive from-list expects a list (of lists, with first entry the list of field names) as input
@@ -55,16 +54,16 @@ public class FactBaseFromList extends DefaultReporter {
 	 * 
 	 */
 	public Syntax getSyntax() {
-		return Syntax.reporterSyntax(new int[]{Syntax.ListType()}, Syntax.WildcardType());
+		return SyntaxJ.reporterSyntax(new int[]{Syntax.ListType()}, Syntax.WildcardType());
 	}
 
-	/** Creates a new fact base from the given list and reports it. The first argument {@link args[0]} has
+	/** Creates a new fact base from the given list and reports it. The first argument {@code args[0]} has
 	 * to contain the list of field names as its first entry.
 	 * 
 	 * @param args the arguments to this call of from-list
 	 * @param context the NetLogo context
 	 * @return a reference to the newly created fact base
-	 * @throw ExtensionException if the argument is invalid
+	 * @throws ExtensionException if the argument is invalid
 	 * @see org.nlogo.api.Reporter#report(org.nlogo.api.Argument[], org.nlogo.api.Context)
 	 */
 	@Override
@@ -79,8 +78,8 @@ public class FactBaseFromList extends DefaultReporter {
 			FactBase fb = (FactBase)fbCreator.report(args, context); // stripping of field names from args is now handled in FactBaseCreate
 			// rest of list are the facts to be added
 			// for each element of arg0.butFirst(), check if it's a list.
-			for (Iterator<Object> facts = arg0.butFirst().iterator(); facts.hasNext(); ) {
-				List<Object> fact = (LogoList)facts.next();
+			for (Iterator<Object> facts = arg0.butFirst().javaIterator(); facts.hasNext(); ) {
+				LogoList fact = (LogoList)facts.next();
 				// then try and assert it. All checks of the fact are done in assertFact()
 				// this will throw an ExtensionException if things go wrong
 				fb.assertFact(fact); 
