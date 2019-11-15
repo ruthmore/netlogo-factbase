@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
 Extension-Name: factbase
 Class-Manager: org.cfpm.factbaseExtension.FactBaseExtension
-NetLogo-Extension-API-Version: 5.0
+NetLogo-Extension-API-Version: 6.1

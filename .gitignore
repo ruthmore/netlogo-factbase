@@ -10,8 +10,8 @@ project/plugins/project/
 .lib/
 
 # Eclipse
-.classpath
-.project
+#.classpath
+#.project
 .settings/
 
 # IntelliJ IDEA
@@ -23,3 +23,6 @@ project/plugins/project/
 *.zip
 *.jar
 .bundledFiles
+
+# Mac related
+.DS_Store
